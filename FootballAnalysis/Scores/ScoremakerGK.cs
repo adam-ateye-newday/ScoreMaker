@@ -1,9 +1,11 @@
-﻿using System;
+﻿using FootballAnalysis.Players;
+using System;
 
 public class ScoremakerGK
 {
-    public int Saves(int saves)
+    public int RateSaves(Goalkeeper goalkeeper)
     {
+        var saves = goalkeeper.Saves;
         if (saves <= 150 && saves > 100)
         {
             saves = 2;
@@ -14,8 +16,9 @@ public class ScoremakerGK
         }
         return saves;
     }
-    public int Cleansheets(int cleansheets)
+    public int RateCleansheets(Goalkeeper goalkeeper)
     {
+        var cleansheets = goalkeeper.Cleansheets;
         if (cleansheets <= 30 && cleansheets > 15)
         {
             cleansheets = 2;
@@ -26,8 +29,9 @@ public class ScoremakerGK
         }
         return cleansheets;
     }
-    public int Conceded(int conceded)
+    public int RateConceded(Goalkeeper goalkeeper)
     {
+        var conceded = goalkeeper.Conceded;
         if (conceded <= 25 && conceded > 20)
         {
             conceded = 2;
@@ -38,8 +42,9 @@ public class ScoremakerGK
         }
         return conceded;
     }
-    public int Sweeps(int sweeps)
+    public int RateSweeps(Goalkeeper goalkeeper)
     {
+        var sweeps = goalkeeper.Sweeps;
         if (sweeps <= 30 && sweeps > 10)
         {
             sweeps = 2;
@@ -50,21 +55,22 @@ public class ScoremakerGK
         }
         return sweeps;
     }
-    public int Appearances(int apps)
+    public int RateAppearances(Goalkeeper goalkeeper)
     {
-        if (apps <= 20 && apps > 0)
+        var appearances = goalkeeper.Appearances;
+        if (appearances <= 20 && appearances > 0)
         {
-            apps = 1;
+            appearances = 1;
         }
-        if (apps <= 40 && apps > 20)
+        if (appearances <= 40 && appearances > 20)
         {
-            apps = 2;
+            appearances = 2;
         }
-        return apps;
+        return appearances;
     }
-    public int aveScoreGK(int saves, int cleansheets, int conceded, int sweeps, int apps)
+    public int AverageScoreGoalkeeper(Goalkeeper goalkeeper)
     {
-        int score = Saves(saves) + Cleansheets(cleansheets) + Conceded(conceded) + Sweeps(sweeps) + Appearances(apps);
+        int score = RateSaves(goalkeeper) + RateCleansheets(goalkeeper) + RateConceded(goalkeeper) + RateSweeps(goalkeeper) + RateAppearances(goalkeeper);
         return score;
     }
 
