@@ -1,14 +1,14 @@
-	<?xml version="1.0"?>
-	<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
-		<metadata>
-			<id>ScoreMaker.API</id>
-			<version>1.0.0</version>
-			<description>ScoreMaker.API</description>
-			<authors>NewDay</authors>
-			<owners>NewDay</owners>
-			<projectUrl>https://github.com/adam-ateye-newday/ScoreMaker</projectUrl>
-		</metadata>
-		<files>
-			<file src="bin\$configuration$\net6.0\publish\**" />
-		</files>
-	</package>
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+	<metadata>
+		<id>ScoreMaker.API</id>
+		<version>1.0.0</version>
+		<description>ScoreMaker.API</description>
+		<authors>NewDay</authors>
+		<owners>NewDay</owners>
+		<projectUrl>https://github.com/adam-ateye-newday/ScoreMaker</projectUrl>
+	</metadata>
+	<files>
+		<file src="bin\$configuration$\net6.0\publish\**" />
+	</files>
+</package>
