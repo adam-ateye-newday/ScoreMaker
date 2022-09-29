@@ -1,6 +1,6 @@
-using FootballAnalysis.Players;
+using ScoreMaker.Library;
 
-namespace FootballAnalysisTest
+namespace ScoreMaker.Test
 {
     public class ScoremakerTests
     {

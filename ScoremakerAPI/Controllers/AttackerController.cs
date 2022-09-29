@@ -1,4 +1,4 @@
-using FootballAnalysis.Players;
+using ScoreMaker.Library;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ScoremakerAPI.Controllers

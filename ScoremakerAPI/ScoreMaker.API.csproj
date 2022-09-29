@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FootballAnalysis\FootballAnalysis.csproj" />
+    <ProjectReference Include="..\ScoreMaker.Library\ScoreMaker.Library.csproj" />
   </ItemGroup>
 
 </Project>
