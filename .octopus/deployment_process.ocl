@@ -14,3 +14,15 @@ step "Create New Product (APIM)" {
         worker_pool_variable = ""
     }
 }
+
+step "Import Swagger File into Azure API Management (APIM)" {
+
+    action {
+        properties = {
+            DisableSubscriptionKeyParam = "False"
+            Octopus.Action.Template.Id = "ActionTemplates-1066"
+            Octopus.Action.Template.Version = "15"
+        }
+        worker_pool_variable = ""
+    }
+}
