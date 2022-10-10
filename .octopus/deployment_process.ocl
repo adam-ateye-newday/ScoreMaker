@@ -40,9 +40,15 @@ step "Apply Policy to all APIs assigned to a Product (APIM)" {
 
     action {
         properties = {
+            ApimProductNameParam = "#{apim_product_name}"
+            ApimServiceNameParam = "#{apim_service_name}"
             EnvParam = "#{environment}"
+            Octopus.Action.RunOnServer = "false"
             Octopus.Action.Template.Id = "ActionTemplates-1068"
             Octopus.Action.Template.Version = "9"
+            PackageIdParam = "#{package_id}"
+            PolicyFileParam = "#{apim_policy_file_name}"
+            ResourceGroupNameParam = "#{resource_group_name}"
         }
         worker_pool_variable = ""
     }
