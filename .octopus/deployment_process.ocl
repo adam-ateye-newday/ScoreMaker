@@ -1,0 +1,12 @@
+step "Create New Product (APIM)" {
+
+    action {
+        properties = {
+            Octopus.Action.Template.Id = "ActionTemplates-1067"
+            Octopus.Action.Template.Version = "9"
+            ProductDescriptionParam = "..."
+            SubscriptionRequired = "True"
+        }
+        worker_pool_variable = ""
+    }
+}
