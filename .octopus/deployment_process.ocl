@@ -35,3 +35,15 @@ step "Import Swagger File into Azure API Management (APIM)" {
         worker_pool_variable = ""
     }
 }
+
+step "Apply Policy to all APIs assigned to a Product (APIM)" {
+
+    action {
+        properties = {
+            EnvParam = "#{environment}"
+            Octopus.Action.Template.Id = "ActionTemplates-1068"
+            Octopus.Action.Template.Version = "9"
+        }
+        worker_pool_variable = ""
+    }
+}
