@@ -2,9 +2,13 @@ step "Create New Product (APIM)" {
 
     action {
         properties = {
+            ApimProductNameParam = "#{apim_product_name}"
+            ApimServiceNameParam = "#{apim_service_name}"
+            Octopus.Action.RunOnServer = "false"
             Octopus.Action.Template.Id = "ActionTemplates-1067"
             Octopus.Action.Template.Version = "9"
             ProductDescriptionParam = "..."
+            ResourceGroupNameParam = "#{resource_group_name}"
             SubscriptionRequired = "True"
         }
         worker_pool_variable = ""
