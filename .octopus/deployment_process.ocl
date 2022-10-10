@@ -19,9 +19,18 @@ step "Import Swagger File into Azure API Management (APIM)" {
 
     action {
         properties = {
+            ApiEndpointUrlParam = "#{apim_api_endpoint_url}"
+            ApimProductNameParam = "#{apim_product_name}"
+            ApimServiceNameParam = "#{apim_service_name}"
+            ApiNameParam = "#{apim_api_name}"
+            ApiPathParam = "#{apim_api_path}"
             DisableSubscriptionKeyParam = "False"
+            Octopus.Action.RunOnServer = "false"
             Octopus.Action.Template.Id = "ActionTemplates-1066"
             Octopus.Action.Template.Version = "15"
+            PackageIdParam = "#{package_id}"
+            ResourceGroupNameParam = "#{resource_group_name}"
+            SwaggerFileParam = "#{apim_swagger_file_name}"
         }
         worker_pool_variable = ""
     }
