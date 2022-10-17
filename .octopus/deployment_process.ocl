@@ -1,0 +1,24 @@
+step "Set Product Instance ID" {
+
+    action {
+        action_type = "Octopus.Script"
+        properties = {
+            Octopus.Action.RunOnServer = "true"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                if ($OctopusParameters["Octopus.Release.Channel.Name"] -eq "Default") {
+                 $product_instance_id = "01"
+                } else {
+                 $release = $OctopusParameters['Octopus.Release.Number']
+                 write-host $release
+                 $version = New-Object System.Version $release.Split("-")[0]
+                 $build = $version.Build    # Major, Minor, Build, Revision
+                 $product_instance_id = $build.ToString("00")
+                }
+                Set-OctopusVariable -Name "product_instance_id" -Value "$product_instance_id"
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "PowerShell"
+        }
+        worker_pool_variable = "workerpool"
+    }
+}
