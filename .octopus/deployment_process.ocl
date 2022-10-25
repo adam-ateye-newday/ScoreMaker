@@ -1,55 +1,24 @@
-step "Create New Product (APIM)" {
+step "Set Product Instance ID" {
 
     action {
+        action_type = "Octopus.Script"
         properties = {
-            ApimProductNameParam = "#{apim_product_name}"
-            ApimServiceNameParam = "#{apim_service_name}"
-            Octopus.Action.RunOnServer = "false"
-            Octopus.Action.Template.Id = "ActionTemplates-1067"
-            Octopus.Action.Template.Version = "9"
-            ProductDescriptionParam = "..."
-            ResourceGroupNameParam = "#{resource_group_name}"
-            SubscriptionRequired = "True"
+            Octopus.Action.RunOnServer = "true"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                if ($OctopusParameters["Octopus.Release.Channel.Name"] -eq "Default") {
+                 $product_instance_id = "01"
+                } else {
+                 $release = $OctopusParameters['Octopus.Release.Number']
+                 write-host $release
+                 $version = New-Object System.Version $release.Split("-")[0]
+                 $build = $version.Build    # Major, Minor, Build, Revision
+                 $product_instance_id = $build.ToString("00")
+                }
+                Set-OctopusVariable -Name "product_instance_id" -Value "$product_instance_id"
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "PowerShell"
         }
-        worker_pool_variable = ""
-    }
-}
-
-step "Import Swagger File into Azure API Management (APIM)" {
-
-    action {
-        properties = {
-            ApiEndpointUrlParam = "#{apim_api_endpoint_url}"
-            ApimProductNameParam = "#{apim_product_name}"
-            ApimServiceNameParam = "#{apim_service_name}"
-            ApiNameParam = "#{apim_api_name}"
-            ApiPathParam = "#{apim_api_path}"
-            DisableSubscriptionKeyParam = "False"
-            Octopus.Action.RunOnServer = "false"
-            Octopus.Action.Template.Id = "ActionTemplates-1066"
-            Octopus.Action.Template.Version = "15"
-            PackageIdParam = "#{package_id}"
-            ResourceGroupNameParam = "#{resource_group_name}"
-            SwaggerFileParam = "#{apim_swagger_file_name}"
-        }
-        worker_pool_variable = ""
-    }
-}
-
-step "Apply Policy to all APIs assigned to a Product (APIM)" {
-
-    action {
-        properties = {
-            ApimProductNameParam = "#{apim_product_name}"
-            ApimServiceNameParam = "#{apim_service_name}"
-            EnvParam = "#{environment}"
-            Octopus.Action.RunOnServer = "false"
-            Octopus.Action.Template.Id = "ActionTemplates-1068"
-            Octopus.Action.Template.Version = "9"
-            PackageIdParam = "#{package_id}"
-            PolicyFileParam = "#{apim_policy_file_name}"
-            ResourceGroupNameParam = "#{resource_group_name}"
-        }
-        worker_pool_variable = ""
+        worker_pool_variable = "workerpool"
     }
 }
