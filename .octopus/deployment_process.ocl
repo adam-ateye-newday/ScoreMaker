@@ -3,7 +3,6 @@ step "Set Product Instance ID" {
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 if ($OctopusParameters["Octopus.Release.Channel.Name"] -eq "Default") {
                  $product_instance_id = "01"
@@ -18,6 +17,227 @@ step "Set Product Instance ID" {
             EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
+        }
+        worker_pool_variable = "workerpool"
+    }
+}
+
+step "Set AppSettings" {
+
+    action {
+        properties = {
+            Octopus.Action.Template.Id = "ActionTemplates-865"
+            Octopus.Action.Template.Version = "3"
+        }
+        worker_pool_variable = "workerpool"
+    }
+}
+
+step "CreateStateFileContainer" {
+
+    action {
+        properties = {
+            Octopus.Action.Template.Id = "ActionTemplates-826"
+            Octopus.Action.Template.Version = "4"
+        }
+        worker_pool_variable = "workerpool"
+    }
+}
+
+step "Plan Terraform template" {
+
+    action {
+        action_type = "Octopus.TerraformPlan"
+        properties = {
+            Octopus.Action.GoogleCloud.ImpersonateServiceAccount = "False"
+            Octopus.Action.GoogleCloud.UseVMServiceAccount = "True"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "Artifactory newday-digital-nuget"
+            Octopus.Action.Package.PackageId = "ScoreMaker.API"
+            Octopus.Action.Script.ScriptSource = "Package"
+            Octopus.Action.Terraform.AllowPluginDownloads = "True"
+            Octopus.Action.Terraform.AzureAccount = "False"
+            Octopus.Action.Terraform.GoogleCloudAccount = "False"
+            Octopus.Action.Terraform.ManagedAccount = "None"
+            Octopus.Action.Terraform.PlanJsonOutput = "False"
+            Octopus.Action.Terraform.RunAutomaticFileSubstitution = "True"
+            Octopus.Action.Terraform.TemplateDirectory = "#{tf_template_dir}"
+        }
+        worker_pool_variable = "workerpool"
+
+        packages {
+            acquisition_location = "Server"
+            feed = "Artifactory newday-digital-nuget"
+            package_id = "ScoreMaker.API"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
+
+step "Check Plan Output For Destroy" {
+
+    action {
+        action_type = "Octopus.Script"
+        properties = {
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                $regex = "[1-9]{1,}\s\bto.destroy."
+                $plan_output = $OctopusParameters["Octopus.Action[Plan Terraform Infrastructure].Output.TerraformPlanOutput"] | Select-String -AllMatches $regex
+                
+                if ($plan_output -ne $null) {
+                    Set-OctopusVariable -name "terraform_plan_destroy_resources" -value "true"
+                    Set-OctopusVariable -name "plan_output" -value $plan_output
+                    Write-Host "Warning: Items being destroyed in Terraform plan step, please check the terraform plan output before proceeding as resources will be destroyed."
+                }
+                
+                if ($plan_output -eq $null) {
+                    Set-OctopusVariable -name "terraform_plan_destroy_resources" -value "false"
+                    Set-OctopusVariable -name "plan_output" -value $plan_output
+                    Write-Host "No items being destroyed."
+                }
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "PowerShell"
+        }
+        worker_pool_variable = "workerpool"
+    }
+}
+
+step "Manual Intervention If Terraform Destroy Detected" {
+    condition = "Variable"
+    properties = {
+        Octopus.Step.ConditionVariableExpression = "#{Octopus.Action[Check Terraform Plan Output For Destroy].Output.terraform_plan_destroy_resources}"
+    }
+
+    action {
+        action_type = "Octopus.Manual"
+        is_required = true
+        properties = {
+            Octopus.Action.Manual.BlockConcurrentDeployments = "False"
+            Octopus.Action.Manual.Instructions = "Warning: Items being destroyed in Terraform plan step, please check the Terraform plan output before proceeding as resources will be destroyed."
+        }
+    }
+}
+
+step "Apply a Terraform template" {
+
+    action {
+        action_type = "Octopus.TerraformApply"
+        properties = {
+            Octopus.Action.GoogleCloud.ImpersonateServiceAccount = "False"
+            Octopus.Action.GoogleCloud.UseVMServiceAccount = "True"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "Artifactory newday-digital-nuget"
+            Octopus.Action.Package.PackageId = "ScoreMaker.API"
+            Octopus.Action.Script.ScriptSource = "Package"
+            Octopus.Action.Terraform.AllowPluginDownloads = "True"
+            Octopus.Action.Terraform.AzureAccount = "False"
+            Octopus.Action.Terraform.GoogleCloudAccount = "False"
+            Octopus.Action.Terraform.ManagedAccount = "None"
+            Octopus.Action.Terraform.PlanJsonOutput = "False"
+            Octopus.Action.Terraform.RunAutomaticFileSubstitution = "True"
+            Octopus.Action.Terraform.TemplateDirectory = "#{tf_template_dir}"
+        }
+        worker_pool_variable = "workerpool"
+
+        packages {
+            acquisition_location = "Server"
+            feed = "Artifactory newday-digital-nuget"
+            package_id = "ScoreMaker.API"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
+
+step "Create New Octopus Azure Web App Target" {
+
+    action {
+        action_type = "Octopus.AzurePowerShell"
+        properties = {
+            Octopus.Action.Azure.AccountId = "#{account}"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                $role = $OctopusParameters["product_id"] + "-app"
+                $webAppName = $OctopusParameters["web_app_name"]
+                $resourceGroup = $OctopusParameters["resource_group_name"]
+                
+                $deploymentTargets = '{0},{1}' -f $webAppName, $role
+                
+                Write-Output "WebAppName:  $webAppName"
+                Write-Output "resourceGroup:  $resourceGroup"
+                Write-Output "role:  $role"
+                Write-Output "deploymentTargets:  $deploymentTargets"
+                
+                New-OctopusAzureWebAppTarget -Name $webAppName `
+                                              -AzureWebApp $webAppName `
+                                              -AzureResourceGroupName $resourceGroup `
+                                              -OctopusAccountIdOrName $OctopusParameters["account"] `
+                                              -OctopusRoles $deploymentTargets `
+                                              -updateIfExisting
+                
+            EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "PowerShell"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool_variable = "workerpool"
+    }
+}
+
+step "Target Health Check" {
+    properties = {
+        Octopus.Action.TargetRoles = "#{web_app_server}"
+    }
+
+    action {
+        action_type = "Octopus.HealthCheck"
+        properties = {
+            Octopus.Action.HealthCheck.ErrorHandling = "TreatExceptionsAsErrors"
+            Octopus.Action.HealthCheck.IncludeMachinesInDeployment = "IncludeCheckedMachines"
+            Octopus.Action.HealthCheck.Type = "FullHealthCheck"
+        }
+    }
+}
+
+step "Update Network Restrictions" {
+
+    action {
+        properties = {
+            JsonContents = <<-EOT
+                #{network_restrictions}
+                
+            EOT
+            Octopus.Action.Template.Id = "ActionTemplates-866"
+            Octopus.Action.Template.Version = "2"
+        }
+        worker_pool_variable = "workerpool"
+    }
+}
+
+step "Enable AD Authentication" {
+
+    action "Enable on Production" {
+        properties = {
+            AuthAction = "LoginWithAzureActiveDirectory"
+            Octopus.Action.Template.Id = "ActionTemplates-1063"
+            Octopus.Action.Template.Version = "37"
+            ResourceGroupName = "#{resource_group_name}"
+            ResourceName = "#{web_app_name}"
+            ResourceSlotName = "production"
+        }
+        worker_pool_variable = "workerpool"
+    }
+
+    action "Enable on Staging2" {
+        properties = {
+            AuthAction = "LoginWithAzureActiveDirectory"
+            Octopus.Action.Template.Id = "ActionTemplates-1063"
+            Octopus.Action.Template.Version = "37"
+            ResourceGroupName = "#{resource_group_name}"
+            ResourceName = "#{web_app_name}"
+            ResourceSlotName = "staging"
         }
         worker_pool_variable = "workerpool"
     }
