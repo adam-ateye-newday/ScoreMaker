@@ -35,7 +35,6 @@ app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-    endpoints.MapHealthChecks("/healthcheck");
 });
 
 /*app.UseHealthChecks("/health", new HealthCheckOptions()
