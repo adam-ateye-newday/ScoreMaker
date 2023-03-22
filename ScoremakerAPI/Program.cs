@@ -18,7 +18,7 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-app.MapHealthChecks("/healthcheck");
+//app.MapHealthChecks("/healthcheck");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -35,6 +35,7 @@ app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
+    endpoints.MapCustomHealthChecks("Service Name");
 });
 
 /*app.UseHealthChecks("/health", new HealthCheckOptions()
