@@ -1,0 +1,231 @@
+﻿{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ScoreMaker.API",
+    "version": "1.0"
+  },
+  "paths": {
+    "/Attacker": {
+      "post": {
+        "tags": [
+          "Attacker"
+        ],
+        "operationId": "PostAttackerScore",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Attacker"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Attacker"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Attacker"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Defender": {
+      "post": {
+        "tags": [
+          "Defender"
+        ],
+        "operationId": "PostDefenderScore",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Defender"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Defender"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Defender"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Goalkeeper": {
+      "post": {
+        "tags": [
+          "Goalkeeper"
+        ],
+        "operationId": "PostGoalkeeperScore",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Goalkeeper"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Goalkeeper"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Goalkeeper"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Attacker": {
+        "type": "object",
+        "properties": {
+          "goals": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assists": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appearances": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Defender": {
+        "type": "object",
+        "properties": {
+          "clearances": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "interceptions": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appearances": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Goalkeeper": {
+        "type": "object",
+        "properties": {
+          "saves": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cleansheets": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "conceded": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sweeps": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appearances": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
